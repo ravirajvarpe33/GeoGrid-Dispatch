@@ -62,7 +62,7 @@ function App() {
     setBroadcastActive(true);
     
     try {
-      await fetch('https://geogrid-backend-pjk3.onrender.com/api/broadcast', {
+      await fetch('https://geogrid-backend-pjk3.onrender.com/api/broadcast-alert', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

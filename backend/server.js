@@ -58,33 +58,15 @@ io.on('connection', (socket) => {
 });
 
 app.post('/api/broadcast-alert', async (req, res) => {
-  const { alertId, lat, lng, radiusKm, childData } = req.body;
+  const { alertId, childData } = req.body;
 
-  if (!lat || !lng || !radiusKm) {
-    return res.status(400).json({ error: 'Missing location parameters' });
-  }
+  console.log('FORCE BROADCASTING TO ALL SOCKETS (Test Mode)');
+  io.emit('missing_alert', { alertId, childData });
 
-  try {
-    const driversInRadius = await redisClient.geoSearch(
-      'active_drivers',
-      { longitude: lng, latitude: lat },
-      { radius: Number(radiusKm), unit: 'km' }
-    );
-
-    console.log(`Broadcasting alert to ${driversInRadius.length} drivers within ${radiusKm}km`);
-
-    driversInRadius.forEach(driverId => {
-      io.to(driverId).emit('missing_alert', { alertId, childData });
-    });
-
-    res.status(200).json({ 
-      success: true, 
-      alertedCount: driversInRadius.length 
-    });
-  } catch (error) {
-    console.error('GeoSearch error:', error);
-    res.status(500).json({ error: 'Server error processing geospatial query' });
-  }
+  res.status(200).json({ 
+    success: true, 
+    message: 'Forced broadcast sent to all sockets' 
+  });
 });
 
 const PORT = process.env.PORT || 3000;
