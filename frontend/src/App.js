@@ -19,7 +19,7 @@ const redIcon = new L.Icon({
   iconAnchor: [12, 41]
 });
 
-const socket = io('http://localhost:3000');
+const socket = io('https://geogrid-backend-pjk3.onrender.com');
 
 function App() {
   const [broadcastActive, setBroadcastActive] = useState(false);
@@ -62,7 +62,7 @@ function App() {
     setBroadcastActive(true);
     
     try {
-      await fetch('http://localhost:3000/api/broadcast-alert', {
+      await fetch('https://geogrid-backend-pjk3.onrender.com/api/broadcast', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
