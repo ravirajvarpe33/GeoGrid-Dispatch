@@ -1,70 +1,30 @@
-# Getting Started with Create React App
+GeoGrid Dispatch
+Overview
+When a child goes missing, the initial hours—commonly referred to as the golden hours—are critical for successful recovery. Traditional public alert mechanisms often suffer from wide dissemination gaps and broad broadcasts that induce notification fatigue, causing people outside the immediate area to ignore them.
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+GeoGrid Dispatch is a real-time emergency coordination platform that connects law enforcement control rooms directly with on-field delivery personnel and local agents. Instead of relying on a city-wide broadcast, the system establishes a localized digital perimeter around an incident location, transmitting multimedia alerts strictly to active units positioned within that specific boundary.
 
-## Available Scripts
+System Architecture
+Incident Pinning: Law enforcement selects an exact location on an interactive React and Leaflet command map interface.
 
-In the project directory, you can run:
+Geospatial Querying: The Node.js backend processes the coordinates against a Redis geospatial index utilizing geoSearch to identify active units within a designated radius of 1 to 15 kilometers.
 
-### `npm start`
+Targeted Dissemination: Real-time communication via Socket.io delivers a high-priority alert containing the child description and photo directly to the targeted devices.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+Feedback Loop: When an agent identifies the target, a return socket transmission sends precise coordinates back to the police dashboard in real time.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+Technology Stack
+Frontend: React.js, Leaflet.js
 
-### `npm test`
+Backend: Node.js, Express
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Real-Time Communication: Socket.io WebSockets
 
-### `npm run build`
+Database & Geospatial Engine: Redis (geoAdd, geoSearch)
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Deployment & Hosting: Render Cloud
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Live Deployment Links
+Police Command Dashboard: https://geogrid-frontend.onrender.com
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Driver Simulator Application: https://geogrid-frontend.onrender.com/driver-app.html
