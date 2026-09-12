@@ -18,14 +18,18 @@ const io = new Server(server, {
 });
 
 io.on('connection', (socket) => {
+  console.log('Client connected:', socket.id);
+
   socket.on('driver_connect', ({ driverId }) => {
     if (driverId) {
       socket.join(driverId);
+      console.log(`Driver joined room: ${driverId}`);
     }
   });
 
   socket.on('police_connect', () => {
     socket.join('police_dispatch');
+    console.log('Police dispatch joined room');
   });
 
   socket.on('update_location', async ({ driverId, lat, lng }) => {
@@ -37,6 +41,7 @@ io.on('connection', (socket) => {
         latitude: lat,
         member: driverId
       });
+      console.log(`Updated location for ${driverId}: [${lat}, ${lng}]`);
     } catch (error) {
       console.error('GeoAdd error:', error);
     }
@@ -63,8 +68,10 @@ app.post('/api/broadcast-alert', async (req, res) => {
     const driversInRadius = await redisClient.geoSearch(
       'active_drivers',
       { longitude: lng, latitude: lat },
-      { radius: radiusKm, unit: 'km' }
+      { radius: Number(radiusKm), unit: 'km' }
     );
+
+    console.log(`Broadcasting alert to ${driversInRadius.length} drivers within ${radiusKm}km`);
 
     driversInRadius.forEach(driverId => {
       io.to(driverId).emit('missing_alert', { alertId, childData });
