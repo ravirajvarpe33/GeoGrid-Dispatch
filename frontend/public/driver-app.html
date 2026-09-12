@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GeoGrid Dispatch Driver App</title>
+    <!-- Import Socket.io directly from CDN -->
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #222; text-align: center; margin: 0; padding: 40px; }
+        .phone-container { background: #f9f9f9; width: 350px; height: 750px; margin: 0 auto; border-radius: 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); overflow: hidden; position: relative; border: 12px solid #111; }
+        .header { background: #ff4a5a; color: white; padding: 20px; font-size: 20px; font-weight: bold; }
+        .status { padding: 30px 20px; font-size: 16px; color: #333; }
+        
+        .alert-modal { display: none; background: #cc0000; color: white; position: absolute; top: 0; left: 0; width: 100%; height: 100%; padding-top: 40px; box-sizing: border-box; z-index: 10; overflow-y: auto; }
+        .spotted-btn { background: white; color: #cc0000; border: none; padding: 15px 30px; font-size: 18px; font-weight: bold; border-radius: 10px; margin: 20px auto; cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.3); display: block; }
+        .spotted-btn:active { transform: scale(0.95); }
+    </style>
+</head>
+<body>
+
+    <div class="phone-container">
+        <div class="header">Delivery Partner App</div>
+        <div class="status">
+            <h2>🟢 Online</h2>
+            <p>Waiting for orders...</p>
+            <hr style="margin: 30px 0; border: 0; border-top: 1px solid #ddd;">
+            <p style="font-size: 14px; color: #777;">Driver ID: <span id="driverId"></span></p>
+            <p style="font-size: 14px; color: #777;">Live GPS: Transmitting...</p>
+        </div>
+
+        <!-- This screen only appears when the police broadcast the alert -->
+        <div id="alertModal" class="alert-modal">
+            <h1 style="font-size: 32px; margin-bottom: 5px;">🚨 ALERT 🚨</h1>
+            <p style="font-size: 16px; margin-top: 0;">Missing Child in your vicinity!</p>
+            
+            <div style="background: white; color: black; margin: 15px; padding: 15px; border-radius: 10px; text-align: left;">
+                <!-- NEW: Image tag for the child's photo -->
+                <img id="childPhoto" src="" style="width: 100%; border-radius: 5px; display: none; margin-bottom: 10px;" />
+                <p style="margin: 0;"><b>Target:</b> <span id="childDesc"></span></p>
+            </div>
+            
+            <p style="padding: 0 20px; font-size: 14px;">Do not approach or intervene. Tap the button below ONLY if sighted.</p>
+            <button class="spotted-btn" onclick="reportSpotted()">👁️ MARK AS SPOTTED</button>
+        </div>
+    </div>
+
+    <script>
+        const socket = io('http://localhost:3000');
+        
+        const myDriverId = 'Driver-' + Math.floor(Math.random() * 9000 + 1000);
+        document.getElementById('driverId').innerText = myDriverId;
+
+        const myLat = 19.0740;
+        const myLng = 72.8750;
+
+        socket.emit('driver_connect', { driverId: myDriverId });
+
+        setInterval(() => {
+            socket.emit('update_location', { 
+                driverId: myDriverId, 
+                lat: myLat, 
+                lng: myLng 
+            });
+        }, 4000);
+
+        socket.on('missing_alert', (data) => {
+            console.log('ALERT RECEIVED!', data);
+            document.getElementById('childDesc').innerText = data.childData.description;
+            
+            // NEW: Display the photo if it exists
+            if (data.childData.photo) {
+                document.getElementById('childPhoto').src = data.childData.photo;
+                document.getElementById('childPhoto').style.display = 'block';
+            } else {
+                document.getElementById('childPhoto').style.display = 'none';
+            }
+            
+            document.getElementById('alertModal').style.display = 'block';
+        });
+
+        function reportSpotted() {
+            socket.emit('target_spotted', {
+                driverId: myDriverId,
+                lat: myLat,
+                lng: myLng,
+                alertId: 'ALERT-001'
+            });
+            
+            document.getElementById('alertModal').innerHTML = "<h2>✅ Location Sent</h2><p>Thank you for your vigilance.</p>";
+            setTimeout(() => {
+                document.getElementById('alertModal').style.display = 'none';
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
